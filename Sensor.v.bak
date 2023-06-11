@@ -1,0 +1,19 @@
+module Sensor (clk,trigger, echoPulse, D);
+input clk, echoPulse;
+output reg trigger;
+output reg [15:0] D = 0;
+reg [9:0] counter = 0;
+reg pre_echo = 0;
+reg [15:0] temp = 0;
+always@ (posedge clk)
+	begin
+	pre_echo <= echoPulse;
+	if (counter < 1000) counter = counter +1;
+	else counter = 1;
+	if (counter <= 10) trigger = 1;
+	else if (counter <=1000) trigger = 0;
+	if (temp < 16'hffff) temp <= temp +1;
+	if ({pre_echo, echoPulse} == 2'b01) temp <= 1;
+	else if ({pre_echo, echoPulse} == 2'b10) D <= temp;
+	end
+endmodule
